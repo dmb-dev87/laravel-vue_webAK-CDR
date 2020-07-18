@@ -156,7 +156,6 @@ export default {
         submit() {
             this.errors = {};
             axios.post('/search', this.fields).then(response => {
-                alert("this.fields.search");
                 this.songs = response.data.items;
                 console.log(response);
             }).catch(error => {
