@@ -21,4 +21,12 @@ class HomeController extends Controller
         return view('admin.home.index', compact('items'));
     }
 
+    public function search(Request $request)
+    {
+        // die($request->search);
+        date_default_timezone_set("America/New_York");
+        $items = TotalSong::where('id', '<=', '8')->get();
+        return response()->json(compact('items', 200));
+        // return view('admin.home.index', compact('items'));
+    }
 }

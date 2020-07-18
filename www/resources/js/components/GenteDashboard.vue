@@ -18,7 +18,7 @@
 			</div>
 			<iframe style="margin:0 auto 10px auto;width:300px;height:70px;display:block;border:1px solid #385898;" src="https://www.facebook.com/plugins/page.php?href=https://www.facebook.com/108415827591318/&amp;small_header=true&amp;adapt_container_width=true&amp;hide_cover=true&amp;show_facepile=false"></iframe>
 			<ul class="lsm mzk">
-				<li v-for="gen in gente">
+				<li v-for="(gen, index) in gente" :key="index">
 					<div class="p _p"><i class="fa-play3"></i></div>
 					<div class="t">
 						<h3>{{gen.title}}</h3>
@@ -56,7 +56,7 @@
 			</div>
             <h2 class="st az"><i class="fa-price-tag"></i> Búsquedas recomendadas</h2>
             <div class="tg">
-                <div  v-for="musiclink in musiclinks">
+                <div  v-for="(musiclink, index) in musiclinks" :key="index">
                 <a v-bind:href="musiclink.herflink4">{{musiclink.title}}</a>
                 </div>
             </div>

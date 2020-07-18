@@ -35,7 +35,7 @@
 
     {{-- <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css"> --}}
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script type="text/javascript" src="main.js?v=1594561039"></script>
+    <!-- <script type="text/javascript" src="main.js?v=1594561039"></script> -->
     
 </head>
 <body>

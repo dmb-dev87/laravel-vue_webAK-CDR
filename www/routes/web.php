@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Route;
     Route::get('/cals/generate' , 'CalsDisController@generateReport')->name('cals.generate.report');
     Route::get('/cals/get' , 'CalsDisController@getPorts')->name('cals.get');
 
+    Route::post('/search', 'HomeController@search')->name('search');
+
     $routesContainer = [
         [
             'names' => 'tubidy',

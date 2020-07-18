@@ -3,8 +3,8 @@
         <p>
             <font :style="val">{{MUSIC[0]}}</font>
         </p>
-        <form class="f" method="post" rel="descargar-mp3">
-            <input type="text" class="i" name="q" placeholder="Search artist or song ..." autocomplete="off">
+        <form class="f" rel="descargar-mp3" @submit.prevent="submit">
+            <input type="text" class="i" name="q" placeholder="Search artist or song ..." autocomplete="off" v-model="fields.search">
             <button class="i s">
                 <b><font :style="val">LOOK FOR</font></b> 
                 <i class="fa-search"></i>
@@ -22,7 +22,8 @@
             </h2>
            
                 <ul class="ls">
-                    <li v-for="item in items">
+                    <li v-for="(item, index) in songs" :key="index">
+                        {{ item }}
                         <div>
                             <h3><a v-bind:href="item.hreflink1"><font :style="val">{{item.title}}</font></a></h3>
                             <span><a v-bind:href="item.hreflink2"><font :style="val">{{item.songername}}</font></a></span>
@@ -75,8 +76,8 @@
             </div>
             <h2 class="st az"><i class="fa-price-tag"></i> Búsquedas recomendadas</h2>
             <div class="tg">
-                <div  v-for="musiclink in musiclinks">
-                <a v-bind:href="musiclink.herflink4">{{musiclink.title}}</a>
+                <div v-for="(musiclink, index) in musiclinks" :key="index">
+                    <a v-bind:href="musiclink.herflink4">{{musiclink.title}}</a>
                 </div>
             </div>
         </section>
@@ -88,11 +89,14 @@ export default {
     props : {
         items : {
             type: Array
-        }
+        },
     },
     data() {
         return{
+            // songs: this.props.items,
+            songs: {},
             val : "vertical-align:right;",
+            fields : {},
             MUSIC : [
                 "All the music of your favorite artists can be found here; Search, listen, download and share with just one click ...",
                 "Music is one of the few things that inspires us to move our bodies and calm our minds. We are all lovers of the good sounds and the moving lyrics of the artists that we follow, we will always want to be aware of their new hits and be able to listen to them at all times.The solution to this is simple, a web page that will allow you to",
@@ -144,9 +148,23 @@ export default {
 
         }
      
-   }
+    },
+    mounted() {
+        this.songs = this.items;
+    },
+    methods: {
+        submit() {
+            this.errors = {};
+            axios.post('/search', this.fields).then(response => {
+                alert("this.fields.search");
+                this.songs = response.data.items;
+                console.log(response);
+            }).catch(error => {
+                if (error.response.status === 422) {
+                    this.errors = error.response.data.errors || {};
+                }
+            });
+        },
+    },
 }
 </script>
-
-
-
