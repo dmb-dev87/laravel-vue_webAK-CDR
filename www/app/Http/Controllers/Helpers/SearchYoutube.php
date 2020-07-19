@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Helpers;
 
+use App\Http\Controllers\Helpers\CacheClass;
+
 class SearchYoutube {
 
   public function limpiar($cadena) {
@@ -39,23 +41,33 @@ class SearchYoutube {
   }
 
   public function searchResult($search) {
-    $context = stream_context_create(array(
-      "ssl"=>array("verify_peer"=>false, "verify_peer_name"=>false,),
-      "http" => array("header" => "User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
-      ));
-      
-    $fuente = @file_get_contents("https://www.youtube.com/search_ajax?style=json&embeddable=1&search_query=".$search, false, $context);
-    
-    $json = json_decode($fuente);
+    $c = new CacheClass();
 
-    if(!empty($json->video[0])){
-      return $json->video;
+    // die($c->isCached($search));
+    $c->setCache($search);
+
+    if ($c->isCached($search)) {
+      $data = $c->retrieve($search);
+    } else {
+      $context = stream_context_create(array(
+        "ssl"=>array("verify_peer"=>false, "verify_peer_name"=>false,),
+        "http" => array("header" => "User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
+        ));
+        
+      $fuente = @file_get_contents("https://www.youtube.com/search_ajax?style=json&embeddable=1&search_query=".$search, false, $context);
+  
+      $json = json_decode($fuente);
+
+      if(!empty($json->video[0])){
+        $data = $json->video;
+        // $c->setCache($search);
+        $c->store($search, $data);
+      } else {
+        $data = null;
+      }
     }
-    else {
-      return null;
-    }
+    return $data;
   }
-
 }
 
 ?>
