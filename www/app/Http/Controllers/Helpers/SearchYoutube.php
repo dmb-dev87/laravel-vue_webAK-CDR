@@ -55,6 +55,7 @@ class SearchYoutube {
         ));
         
       $fuente = @file_get_contents("https://www.youtube.com/search_ajax?style=json&embeddable=1&search_query=".$search, false, $context);
+      // $fuente = @file_get_contents("https://www.googleapis.com/youtube/v3/search?part=".$search, false, $context);
   
       $json = json_decode($fuente);
 
