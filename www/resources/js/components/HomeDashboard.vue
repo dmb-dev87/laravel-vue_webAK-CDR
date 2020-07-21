@@ -21,15 +21,36 @@
                 <i class="fa-star-full"></i><font :style="val">{{MUSIC[3]}}</font>
             </h2>
            
-                <ul class="ls">
-                    <li v-for="(item, index) in songs" :key="index">
-                        {{ item }}
-                        <div>
-                            <h3><a v-bind:href="item.hreflink1"><font :style="val">{{item.title}}</font></a></h3>
-                            <span><a v-bind:href="item.hreflink2"><font :style="val">{{item.songername}}</font></a></span>
+            <!-- <ul class="ls">
+                <li v-for="(item, index) in items" :key="index">
+                    {{ item }}
+                    <div>
+                        <h3><a v-bind:href="item.hreflink1"><font :style="val">{{item.title}}</font></a></h3>
+                        <span><a v-bind:href="item.hreflink2"><font :style="val">{{item.songername}}</font></a></span>
+                    </div>
+                </li>
+            </ul> -->
+
+            <ul class="lsm mzk">
+                <li v-for="(item, index) in songs" :key="index">
+                    <div class="p _p">
+                        <i class="fa-play3"></i>
+                    </div>
+                    <div class="t">
+                        <h3>{{item.title}}</h3>
+                        <p>
+                            <span>• Duración: {{item.duration}}</span>
+                            <span>• Peso: {{item.length_seconds}}</span>
+                        </p>
+                    </div>
+                    <div class="b">
+                        <div class="e _p">
                         </div>
-                    </li>
-                </ul>
+                        <div class="d">
+                        </div>
+                    </div>
+                </li>
+            </ul>
            
 
             <h2 class="st ve"><i class="fa-star-full"></i><font :style="val"> TOP MP3 ARTISTS</font></h2>

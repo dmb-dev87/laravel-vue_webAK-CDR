@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Http\Controllers\Helpers;
+
 /**
  * Simple Cache class
  * API Documentation: https://github.com/cosenary/Simple-PHP-Cache
@@ -11,7 +13,7 @@
  * @license BSD http://www.opensource.org/licenses/bsd-license.php
  */
 
-class Cache {
+class CacheClass {
 
   /**
    * The path to the cache file folder
