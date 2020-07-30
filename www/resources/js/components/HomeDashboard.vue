@@ -10,7 +10,9 @@
                 <i class="fa-search"></i>
             </button>
         </form>
-
+        <div class="suggestion">
+            <a class="btn btn-primary btn-suggestion" v-for="suggestion in suggestions" :key="suggestion" role="button" v-on:click="clickSuggestion(suggestion)">{{suggestion}}</a>
+        </div>
         <section id="s" >
             <div class="tx">
                 <p>
@@ -33,8 +35,8 @@
 
             <ul class="lsm mzk">
                 <li v-for="(item, index) in songs" :key="index">
-                    <div class="p _p">
-                        <i class="fa-play3"></i>
+                    <div class="p _p" :id="'pp_'+item.encrypted_id">
+                        <i class="fa-play3" :id="'play_'+item.encrypted_id" v-on:click="playAud(item.encrypted_id)"></i>
                     </div>
                     <div class="t">
                         <h3>{{item.title}}</h3>
@@ -44,11 +46,17 @@
                         </p>
                     </div>
                     <div class="b">
-                        <div class="e _p">
+                        <div class="e _p startbtn" :id="'startbtn_'+item.encrypted_id" v-on:click="playAud(item.encrypted_id)">
                         </div>
-                        <div class="d">
+                        <div class="d dwndbtn" :id="'dwndbtn_'+item.encrypted_id" v-on:click="downloadAud(item.encrypted_id)">
+                        </div>
+						<div class="d dwn stopdbtn" :id="'stopdbtn_'+item.encrypted_id" v-on:click="stopdownloadAud(item.encrypted_id)" style="display:none;">
                         </div>
                     </div>
+					<div class="dbtn" :id="'dbtn_'+item.encrypted_id" style="border-top: 1px solid #ccc; padding: 2px; margin-top: 14px; width: 100%; display:none;">
+						<iframe :src="'https://ytconvert.in/button/mp3/'+item.encrypted_id+'/?l=es'" style="width:100%;height:70px;border:0;margin-top: 5px;" scrolling="no"></iframe>
+					</div>
+					
                 </li>
             </ul>
            
@@ -101,12 +109,23 @@
                     <a v-bind:href="musiclink.herflink4">{{musiclink.title}}</a>
                 </div>
             </div>
+			
+			<div id="audplayer" style="display:none;"></div>
+			
         </section>
+        <ScrollTopArrow/>
     </div>
+
 </template>
 
 <script>
+
+var player = null;
+import ScrollTopArrow from './global/ScrollTopArrow.vue'
 export default {
+    components: {
+        ScrollTopArrow
+    },
     props : {
         items : {
             type: Array
@@ -118,6 +137,7 @@ export default {
             songs: {},
             val : "vertical-align:right;",
             fields : {},
+            suggestions: [],
             MUSIC : [
                 "All the music of your favorite artists can be found here; Search, listen, download and share with just one click ...",
                 "Music is one of the few things that inspires us to move our bodies and calm our minds. We are all lovers of the good sounds and the moving lyrics of the artists that we follow, we will always want to be aware of their new hits and be able to listen to them at all times.The solution to this is simple, a web page that will allow you to",
@@ -173,18 +193,130 @@ export default {
     mounted() {
         this.songs = this.items;
     },
+    computed: {
+        parseSearchKey () {
+            return this.fields.search
+        }
+    },
+    watch: {
+        parseSearchKey: function(val, oldVal) {
+            if (val.length >= 3) {
+                axios.post('/suggest_list', {search: val}).then(response=> {
+                    this.suggestions = response.data.items[1]
+                }).catch(error => {
+                    
+                })
+            }
+        }
+    },
     methods: {
-        submit() {
-            this.errors = {};
-            axios.post('/search', this.fields).then(response => {
-                this.songs = response.data.items;
-                console.log(response);
-            }).catch(error => {
-                if (error.response.status === 422) {
-                    this.errors = error.response.data.errors || {};
-                }
-            });
+        clickSuggestion: function(suggestion) {
+            window.location = "/search/" + encodeURI(suggestion);
         },
+        submit() {
+            // if (window.location.href.search("search") == -1)
+                window.location = "/search/" + encodeURI(this.fields.search);
+            // else {
+            //     this.errors = {};
+            //     var searchobj = {search : encodeURI(this.fields.search)};
+            //     axios.post('/search', searchobj).then(response => {
+            //         this.songs = response.data.items.sort((a, b) => (a.time_created < b.time_created) ? 1 : -1);
+            //         console.log(response);
+            //     }).catch(error => {
+            //         if (error.response.status === 422) {
+            //             this.errors = error.response.data.errors || {};
+            //         }
+            //     });
+//            }
+        },
+		playAud(audid) {
+		
+		var newplay = 1;
+		
+		    if(player!=null)
+			{
+			   var video_data = player.getVideoData()
+			   if(player.getVideoData()['video_id'] == audid)
+			   {
+			        newplay = 0;
+			   }
+			}
+			
+			if(newplay==1)
+			{
+			      $("#audplayer").html("<div id=\"video-placeholder\"></div>");
+					player = new YT.Player('video-placeholder', {
+					width: 0,
+					height: 0,
+					videoId: audid,
+					playerVars: { 'autoplay': 1 },
+				   });
+				   $("._p").removeClass("go");
+				   $("#pp_"+audid).addClass("go");
+				   $("#startbtn_"+audid).addClass("go");
+				   $("#startbtn_"+audid).removeClass("startbtn");
+			}
+			else
+			{
+			   if(player.getPlayerState()==1 || player.getPlayerState()==3)
+			   {
+			      player.pauseVideo(); 
+				  $("._p").removeClass("startbtn");
+				  $("#pp_"+audid).removeClass("go");
+				  $("#startbtn_"+audid).removeClass("go");
+				  $("#startbtn_"+audid).addClass("startbtn");
+			   }
+			   else
+			   {
+			       player.playVideo(); 
+				   $("._p").removeClass("go");
+				   $("#pp_"+audid).addClass("go");
+				   $("#startbtn_"+audid).addClass("go");
+				   $("#startbtn_"+audid).removeClass("startbtn");
+			   }
+			}   
+		},
+
+		downloadAud(audio){
+			$('.dbtn').hide();
+			$('.stopdbtn').hide();
+			$('.dwndbtn').show();
+			$('#dbtn_'+audio).show();
+			$('#dwndbtn_'+audio).hide();
+			$('#stopdbtn_'+audio).show();
+		},
+
+		stopdownloadAud(audio){
+			$('#dbtn_'+audio).hide();
+			$('#dwndbtn_'+audio).show();
+			$('#stopdbtn_'+audio).hide();
+		}
     },
 }
+
+
+
+$(function() {
+
+	var tag = document.createElement('script');
+	tag.src = "https://www.youtube.com/iframe_api";
+	var firstScriptTag = document.getElementsByTagName('script')[0];
+	firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+});
+
 </script>
+<style>
+    .btn-suggestion {
+        margin-bottom: 10px;
+        margin-right: 5px;
+        background: #18BC9C;
+        border-color: #18BC9C;
+        color: white !important;
+    }
+    .btn {
+        padding-top: 0px !important
+    }
+    .suggestion {
+        text-align: center;
+    }
+</style>

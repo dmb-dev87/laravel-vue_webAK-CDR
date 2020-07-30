@@ -15,14 +15,14 @@ use Illuminate\Support\Facades\Route;
 
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/' , 'HomeController@index')->name('home');
-    
+    Route::get('/search/{searchKey}', 'SearchResultController@index')->name('search_result');
     Route::get('/result/{title}', 'DynamicController@index')->name('result');
     //generate calls report
     Route::get('/cals/generate' , 'CalsDisController@generateReport')->name('cals.generate.report');
     Route::get('/cals/get' , 'CalsDisController@getPorts')->name('cals.get');
 
     Route::post('/search', 'HomeController@search')->name('search');
-
+    Route::post('/suggest_list', 'HomeController@suggest_list')->name('suggest_list');
     $routesContainer = [
         [
             'names' => 'tubidy',
